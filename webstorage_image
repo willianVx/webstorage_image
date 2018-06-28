@@ -1,0 +1,67 @@
+/*
+*
+*   Armazena dados para favoritar imagens com web storage API
+*
+*
+*
+*
+*/
+//Armazena lista de imagens favoritas que estão no webstorage // ** // tem os métodos do localStorage
+var fav = function(){
+    this.url_imagens = [];
+    for (var key in localStorage) {
+        if (localStorage.hasOwnProperty(key) & key.includes('image')) {
+            this.url_imagens.push([key, localStorage[key]]);
+        }
+    }
+    return this.url_imagens;
+}
+fav.prototype = window.localStorage;
+
+//Adiciona uma nova imagem aos favoritos 
+var add_fav = function(url){
+    if (filtro(url) == -1) {
+        var indice = 'image' + fav_indice_validate();
+        fav.prototype.setItem(indice, url);
+    }else{
+        delete_fav(fav()[filtro(url)]["0"]);
+        return
+    }
+}
+add_fav.prototype = new fav();
+
+//Deleta a imagem dos favoritos
+var delete_fav = function(indice){
+    fav.prototype.removeItem(indice);
+}
+delete_fav.prototype = new fav();
+
+//compara a imagem a ser favoritada com as que estão salvas no webstorage
+function filtro(url){
+    var lista_url = [];
+    for (let index = 0; index < fav().length; index++) {
+        const element = fav()[index];
+        lista_url.push(element[1]);
+    }
+    return lista_url.indexOf(url);
+}
+//valida indice
+var fav_indice_validate = function(){
+    let prop_indice = [];
+    if (fav().length == 0) {
+        return this.url_imagens.length + 11;
+    }else{
+        for (let index = 0; index < fav().length; index++) {
+            const element = fav()[index];
+            prop_indice.push(element[0]);
+        }
+        var ultimo_prop_indice = prop_indice[prop_indice.length -1];
+        return apenasNumeros(ultimo_prop_indice) + 1;
+    }
+}
+fav_indice_validate.prototype = new fav();
+
+function apenasNumeros(string){
+    var numsStr = string.replace(/[^0-9]/g,'');
+    return parseInt(numsStr);
+}
